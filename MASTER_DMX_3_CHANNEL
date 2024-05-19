@@ -1,0 +1,24 @@
+//ICI on se fait pas suer, on prend ce code pour le test, simple, efficace, on envoie des données sur 3 canaux pour la majorité des test
+//et pour s'assurer de la bonne réception des messages, c'est largement suffisant.
+
+//Mario D. ELECTROLYTE INC
+
+//  __  __   _   ___ _____ ___ ___ 
+// |  \/  | /_\ / __|_   _| __| _ \
+// | |\/| |/ _ \\__ \ | | | _||   /
+// |_|  |_/_/ \_\___/ |_| |___|_|_\
+                                 
+
+#include <DMXSerial.h>
+
+void setup() {
+  DMXSerial.init(DMXController);
+} 
+void loop() {
+
+  DMXSerial.write(1, 255);
+  DMXSerial.write(2, 128);
+  DMXSerial.write(3, 64);
+
+  delayMicroseconds(2000); // Même si on aime pas les delay, celui-ci est obligatoire, sinon ça se casse la figure niveau code, fen gros, rien ne s'envoi
+}
