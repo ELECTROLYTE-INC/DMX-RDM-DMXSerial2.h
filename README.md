@@ -1,6 +1,6 @@
 Hello ! Bonjour !
 
-Je vaisessayer ici d'alimenter ce GitHub concernant le DMX RDM avec la librairie de Matthias Hertel(http://www.mathertel.de) Parce que je pige que dalle et rien sur Google, rien sur YouTube
+Je vais essayer ici d'alimenter ce GitHub concernant le DMX RDM avec la librairie de Matthias Hertel(http://www.mathertel.de) Parce que je pige que dalle et rien sur Google, rien sur YouTube
 et ChatGPT parle chinois quand on lui demande des infos...
 
 DEJA - On va commencer par ce bout de code qui reçoit des commandes DMX mais venant uniquement de DMXSerial.h (Donc pas le DMXSerial2.h) et de DmxSimple.h (et autre console envoyant un message DMX :
