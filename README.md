@@ -1,0 +1,85 @@
+//Hello ! Bonjour !
+
+//Je vaisessayer ici d'alimenter ce GitHub concernant le DMX RDM avec la librairie de Matthias Hertel(http://www.mathertel.de) Parce que je pige que dalle et rien sur Google, rien sur YouTube
+//et ChatGPT parle chinois quand on lui demande des infos...
+
+//DEJA - On va commencer par ce bout de code qui reçoit des commandes DMX mais venant uniquement de DMXSerial.h (Donc pas le DMXSerial2.h) et de DmxSimple.h (et autre console envoyant un message DMX :
+//Là je reçois avec DMXSerial2.h les 512 canaux DMX, et croyez moi j'ai galéré alors que c'est simple... Si des gens ont fait un CODE MASTER pouvant envoyer du DMX, des Request RDM et Reception RDM je suis interessé...
+
+//Mario D. ELECTROLYTE INC
+
+//  ___ _      ___   _____ 
+// / __| |    /_\ \ / / __|
+// \__ \ |__ / _ \ V /| _| 
+// |___/____/_/ \_\_/ |___|
+                         
+#include "FastLED.h"
+#include <DMXSerial2.h>
+
+#define NUM_LEDS 1
+#define DATA_PIN 8
+
+CRGB leds[NUM_LEDS];
+
+// Define the RDM callback function
+bool8 rdmCallback(struct RDMDATA *buffer, uint16_t *nackReason) {
+  // Check the RDM command class and parameter ID
+  if (buffer->CmdClass == E120_GET_COMMAND && buffer->Parameter == E120_DEVICE_INFO) {
+    // Respond to the DEVICE_INFO command
+    buffer->CmdClass = E120_GET_COMMAND_RESPONSE;
+    buffer->DataLength = 19; // Example length
+    // Fill the data with example device info
+    buffer->Data[0] = 0x01; // Example data
+    buffer->Data[1] = 0x02;
+    // Continue to fill buffer->Data[] with the appropriate response data
+    return true;
+  }
+  return false;
+}
+
+// Example sensor callback function
+bool8 rdmSensorCallback(uint8_t sensorNr, int16_t *value, int16_t *lowestValue, int16_t *highestValue, int16_t *recordedValue) {
+  // Provide sensor values (example values)
+  *value = 50;
+  *lowestValue = 0;
+  *highestValue = 100;
+  *recordedValue = 75;
+  return true;
+}
+
+void setup() {
+  delay(200);
+  FastLED.addLeds<WS2812, DATA_PIN, RGB>(leds, NUM_LEDS);  // GRB ordering is typical
+  // RDM initialization data
+  struct RDMINIT rdmInit = {
+    "ELECTROLYTE",           // Manufacturer label
+    1234,                    // Device model ID
+    "MCAM MK6 HEADER",       // Device model label
+    1,                       // Footprint
+    0,                       // Additional commands length
+    nullptr,                 // Additional commands
+    0,                       // Sensors length
+    nullptr                  // Sensors
+  };
+
+  // Initialize DMXSerial2 in receiver mode with RDM support
+  DMXSerial2.init(&rdmInit, rdmCallback, rdmSensorCallback, NULL, 0, 1);
+               //(RDM-JeSaisPas,RDM-JeSaisPas,RDM-JeSaisPas,PINModeRE/DE, OUT, IN)
+               //J'ai 2 RS485, un connecté en permanence en LOW pour la réception et l'autre en HIGH pour l'émission, je m'affranchis du set RE/RE en HIGH ou LOW
+}
+
+void loop() {
+  
+  // Continuously check for incoming DMX and RDM messages
+  DMXSerial2.tick();
+  
+  cli();//InterruptOFF pour WS2812B
+  uint8_t value = DMXSerial2.read(1);
+  sei();//InterruptON pour WS2812B
+  
+  // Use the value for your application
+  leds[0] = CRGB(value, 0, 20);
+
+  FastLED.show();
+  delay(10);
+}
